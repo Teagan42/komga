@@ -165,10 +165,11 @@ class SqliteToPostgresMigrationTest {
           file = ""
         }
       every { komgaProperties.database } returns dbProps
-      every { komgaProperties.tasksDb } returns KomgaProperties.Database().apply {
-        type = KomgaProperties.DatabaseType.POSTGRESQL
-        file = ""
-      }
+      every { komgaProperties.tasksDb } returns
+        KomgaProperties.Database().apply {
+          type = KomgaProperties.DatabaseType.POSTGRESQL
+          file = ""
+        }
 
       migration.run(mockk(relaxed = true))
 
@@ -184,10 +185,11 @@ class SqliteToPostgresMigrationTest {
           file = nonExistent
         }
       every { komgaProperties.database } returns dbProps
-      every { komgaProperties.tasksDb } returns KomgaProperties.Database().apply {
-        type = KomgaProperties.DatabaseType.POSTGRESQL
-        file = ""
-      }
+      every { komgaProperties.tasksDb } returns
+        KomgaProperties.Database().apply {
+          type = KomgaProperties.DatabaseType.POSTGRESQL
+          file = ""
+        }
 
       migration.run(mockk(relaxed = true))
 
@@ -337,11 +339,21 @@ class SqliteToPostgresMigrationTest {
     fun `given rows in source table then migrates all rows`() {
       sourceTemplate.update(
         """INSERT INTO LIBRARY (ID, NAME, ROOT, ACTIVE, CREATED_DATE, THUMBNAIL) VALUES (?, ?, ?, ?, ?, ?)""",
-        "lib1", "My Library", "file:///books", 1, "2023-01-01 00:00:00.000", null,
+        "lib1",
+        "My Library",
+        "file:///books",
+        1,
+        "2023-01-01 00:00:00.000",
+        null,
       )
       sourceTemplate.update(
         """INSERT INTO LIBRARY (ID, NAME, ROOT, ACTIVE, CREATED_DATE, THUMBNAIL) VALUES (?, ?, ?, ?, ?, ?)""",
-        "lib2", "Comics", "file:///comics", 0, "2023-06-15 12:00:00.000", byteArrayOf(1, 2, 3),
+        "lib2",
+        "Comics",
+        "file:///comics",
+        0,
+        "2023-06-15 12:00:00.000",
+        byteArrayOf(1, 2, 3),
       )
 
       val columnTypes = migration.getColumnTypes(sourceTemplate, "LIBRARY")
@@ -366,11 +378,19 @@ class SqliteToPostgresMigrationTest {
     fun `given duplicate rows then ON CONFLICT DO NOTHING prevents duplicates`() {
       sourceTemplate.update(
         """INSERT INTO LIBRARY (ID, NAME, ROOT, ACTIVE, CREATED_DATE) VALUES (?, ?, ?, ?, ?)""",
-        "lib1", "My Library", "file:///books", 1, "2023-01-01 00:00:00.000",
+        "lib1",
+        "My Library",
+        "file:///books",
+        1,
+        "2023-01-01 00:00:00.000",
       )
       targetTemplate.update(
         """INSERT INTO LIBRARY (ID, NAME, ROOT, ACTIVE, CREATED_DATE) VALUES (?, ?, ?, ?, ?)""",
-        "lib1", "Existing", "file:///existing", 1, "2022-01-01 00:00:00.000",
+        "lib1",
+        "Existing",
+        "file:///existing",
+        1,
+        "2022-01-01 00:00:00.000",
       )
 
       val columnTypes = migration.getColumnTypes(sourceTemplate, "LIBRARY")
@@ -410,7 +430,8 @@ class SqliteToPostgresMigrationTest {
         )
         srcTemplate.update(
           """INSERT INTO "SERVER_SETTINGS" ("KEY", "VALUE") VALUES (?, ?)""",
-          "some-setting", "some-value",
+          "some-setting",
+          "some-value",
         )
       } finally {
         sourcDs.close()
@@ -455,7 +476,9 @@ class SqliteToPostgresMigrationTest {
           """CREATE TABLE IF NOT EXISTS "SERVER_SETTINGS" ("KEY" varchar PRIMARY KEY, "VALUE" varchar)""",
         )
         srcTemplate.update(
-          """INSERT INTO "SERVER_SETTINGS" ("KEY", "VALUE") VALUES (?, ?)""", "key1", "val1",
+          """INSERT INTO "SERVER_SETTINGS" ("KEY", "VALUE") VALUES (?, ?)""",
+          "key1",
+          "val1",
         )
       } finally {
         sourcDs.close()
@@ -470,7 +493,8 @@ class SqliteToPostgresMigrationTest {
         // Pre-set the migration done flag
         tgtTemplate.update(
           """INSERT INTO "SERVER_SETTINGS" ("KEY", "VALUE") VALUES (?, ?)""",
-          SqliteToPostgresMigration.MIGRATION_DONE_KEY, "true",
+          SqliteToPostgresMigration.MIGRATION_DONE_KEY,
+          "true",
         )
 
         migration.migrateIfNeeded(

@@ -187,9 +187,10 @@ class SqliteToPostgresMigration(
     template: JdbcTemplate,
     table: String,
   ): Map<String, String> =
-    template.query("""PRAGMA table_info("$table")""") { rs, _ ->
-      rs.getString("name") to rs.getString("type").lowercase()
-    }.toMap()
+    template
+      .query("""PRAGMA table_info("$table")""") { rs, _ ->
+        rs.getString("name") to rs.getString("type").lowercase()
+      }.toMap()
 
   internal fun migrateTable(
     sourceTemplate: JdbcTemplate,
@@ -205,9 +206,10 @@ class SqliteToPostgresMigration(
     var count = 0
     sourceTemplate.query("""SELECT * FROM "$table"""") { rs ->
       val values =
-        columns.map { col ->
-          convertValue(rs.getObject(col), columnTypes[col] ?: "")
-        }.toTypedArray()
+        columns
+          .map { col ->
+            convertValue(rs.getObject(col), columnTypes[col] ?: "")
+          }.toTypedArray()
       targetTemplate.update(insertSql, *values)
       count++
     }
