@@ -17,6 +17,14 @@ logging:
 komga:
   database:
     file: \${komga.config-dir}/database.sqlite
+    # To use PostgreSQL instead of SQLite, set type to postgresql and provide connection details:
+    # type: postgresql
+    # url: jdbc:postgresql://localhost:5432/komga
+    # username: komga
+    # password: komga
+    # To migrate existing SQLite data to PostgreSQL on first startup, also set 'file' to the
+    # path of the existing SQLite database. The migration will run once and will be skipped
+    # on subsequent startups. Remove 'file' after migration to avoid confusion.
   lucene:
     data-directory: \${komga.config-dir}/lucene
   fonts:

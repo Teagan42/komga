@@ -107,6 +107,9 @@ dependencies {
   implementation("org.xerial:sqlite-jdbc:${libs.versions.sqliteJdbc.get()}")
   jooqGenerator("org.xerial:sqlite-jdbc:${libs.versions.sqliteJdbc.get()}")
 
+  implementation("org.postgresql:postgresql:${libs.versions.postgresqlJdbc.get()}")
+  implementation("org.flywaydb:flyway-database-postgresql")
+
   if (version.toString().endsWith(".0.0")) {
     ksp("com.github.gotson.bestbefore:bestbefore-processor-kotlin:0.2.0")
   }

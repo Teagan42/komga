@@ -1,5 +1,6 @@
 package org.gotson.komga.infrastructure.jooq
 
+import org.gotson.komga.infrastructure.configuration.KomgaProperties
 import org.jooq.DSLContext
 import org.jooq.ExecuteListenerProvider
 import org.jooq.SQLDialect
@@ -18,7 +19,11 @@ import javax.sql.DataSource
 // taken from https://github.com/spring-projects/spring-boot/blob/v3.1.4/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jooq/JooqAutoConfiguration.java
 // as advised in https://docs.spring.io/spring-boot/docs/3.1.4/reference/htmlsingle/#howto.data-access.configure-jooq-with-multiple-datasources
 @Configuration
-class KomgaJooqConfiguration {
+class KomgaJooqConfiguration(
+  private val komgaProperties: KomgaProperties,
+) {
+  private fun dialect(): SQLDialect = if (komgaProperties.database.isPostgresql()) SQLDialect.POSTGRES else SQLDialect.SQLITE
+
   @Bean("dslContextRW")
   @Primary
   fun mainDslContextRW(
@@ -54,7 +59,7 @@ class KomgaJooqConfiguration {
     executeListenerProviders: ObjectProvider<ExecuteListenerProvider?>,
   ) = DefaultDSLContext(
     DefaultConfiguration().also { configuration ->
-      configuration.set(SQLDialect.SQLITE)
+      configuration.set(dialect())
       configuration.set(DataSourceConnectionProvider(TransactionAwareDataSourceProxy(dataSource)))
       transactionProvider.ifAvailable { newTransactionProvider: TransactionProvider? -> configuration.set(newTransactionProvider) }
       configuration.set(*executeListenerProviders.orderedStream().toList().toTypedArray())
