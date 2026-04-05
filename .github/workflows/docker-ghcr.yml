@@ -75,6 +75,11 @@ jobs:
           cp "komga/build/libs/${JAR}" komga/docker/assembly/
           sed "s/{{distributionArtifactFile}}/${JAR}/" komga/docker/Dockerfile.tpl > komga/docker/Dockerfile
 
+      - name: Lowercase owner
+        id: lower
+        run: |
+          echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -82,7 +87,7 @@ jobs:
           platforms: ${{ inputs.platforms }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/komga:${{ inputs.tag }}
-            ghcr.io/${{ github.repository_owner }}/komga:${{ steps.version.outputs.version }}
+            ghcr.io/${{ steps.lower.outputs.owner }}/komga:${{ inputs.tag }}
+            ghcr.io/${{ steps.lower.outputs.owner }}/komga:${{ steps.version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
