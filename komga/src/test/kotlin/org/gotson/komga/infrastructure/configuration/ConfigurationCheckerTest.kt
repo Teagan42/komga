@@ -24,11 +24,12 @@ class ConfigurationCheckerTest {
     }
 
     @Test
-    fun `given postgresql database type and check-local-filesystem true then no exception thrown`() {
+    fun `given postgresql database type with sqlite migration source file then filesystem check is still skipped`() {
+      // Even if 'file' points to an existing SQLite path, PostgreSQL should skip the filesystem type check
       val props = buildProperties { db ->
         db.type = KomgaProperties.DatabaseType.POSTGRESQL
-        db.url = "jdbc:postgresql://localhost:5432/komga"
-        db.file = ""
+        db.url = "jdbc:postgresql://remotehost:5432/komga"
+        db.file = "/tmp/old_database.sqlite"
         db.checkLocalFilesystem = true
       }
       val checker = ConfigurationChecker(props)

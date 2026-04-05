@@ -177,10 +177,11 @@ class SqliteToPostgresMigrationTest {
 
     @Test
     fun `given postgresql with non-existent sqlite file then migration is skipped`() {
+      val nonExistent = System.getProperty("java.io.tmpdir") + "/nonexistent-${System.currentTimeMillis()}.sqlite"
       val dbProps =
         KomgaProperties.Database().apply {
           type = KomgaProperties.DatabaseType.POSTGRESQL
-          file = "/tmp/nonexistent-${System.currentTimeMillis()}.sqlite"
+          file = nonExistent
         }
       every { komgaProperties.database } returns dbProps
       every { komgaProperties.tasksDb } returns KomgaProperties.Database().apply {

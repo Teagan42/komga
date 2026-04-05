@@ -63,10 +63,8 @@ class DataSourcesConfiguration(
     databaseProps: KomgaProperties.Database,
   ): HikariDataSource {
     val poolSize =
-      if (databaseProps.poolSize != null)
-        databaseProps.poolSize!!
-      else
-        Runtime.getRuntime().availableProcessors().coerceAtMost(databaseProps.maxPoolSize)
+      databaseProps.poolSize
+        ?: Runtime.getRuntime().availableProcessors().coerceAtMost(databaseProps.maxPoolSize)
 
     return HikariDataSource(
       HikariConfig().apply {
