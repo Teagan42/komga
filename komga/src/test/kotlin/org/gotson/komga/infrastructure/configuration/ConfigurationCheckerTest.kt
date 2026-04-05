@@ -13,12 +13,13 @@ class ConfigurationCheckerTest {
   inner class PostgresqlSkipsFilesystemCheck {
     @Test
     fun `given postgresql database type then filesystem check is skipped without error`() {
-      val props = buildProperties { db ->
-        db.type = KomgaProperties.DatabaseType.POSTGRESQL
-        db.url = "jdbc:postgresql://localhost:5432/komga"
-        db.file = ""
-        db.checkLocalFilesystem = true
-      }
+      val props =
+        buildProperties { db ->
+          db.type = KomgaProperties.DatabaseType.POSTGRESQL
+          db.url = "jdbc:postgresql://localhost:5432/komga"
+          db.file = ""
+          db.checkLocalFilesystem = true
+        }
       val checker = ConfigurationChecker(props)
       assertThatCode { checker.checkDatabasesPath() }.doesNotThrowAnyException()
     }
@@ -26,12 +27,13 @@ class ConfigurationCheckerTest {
     @Test
     fun `given postgresql database type with sqlite migration source file then filesystem check is still skipped`() {
       // Even if 'file' points to an existing SQLite path, PostgreSQL should skip the filesystem type check
-      val props = buildProperties { db ->
-        db.type = KomgaProperties.DatabaseType.POSTGRESQL
-        db.url = "jdbc:postgresql://remotehost:5432/komga"
-        db.file = "/tmp/old_database.sqlite"
-        db.checkLocalFilesystem = true
-      }
+      val props =
+        buildProperties { db ->
+          db.type = KomgaProperties.DatabaseType.POSTGRESQL
+          db.url = "jdbc:postgresql://remotehost:5432/komga"
+          db.file = "/tmp/old_database.sqlite"
+          db.checkLocalFilesystem = true
+        }
       val checker = ConfigurationChecker(props)
       assertThatCode { checker.checkDatabasesPath() }.doesNotThrowAnyException()
     }
@@ -63,33 +65,36 @@ class ConfigurationCheckerTest {
       @TempDir tempDir: Path,
     ) {
       val dbFile = tempDir.resolve("test.sqlite").toString()
-      val props = buildProperties { db ->
-        db.type = KomgaProperties.DatabaseType.SQLITE
-        db.file = dbFile
-        db.checkLocalFilesystem = true
-      }
+      val props =
+        buildProperties { db ->
+          db.type = KomgaProperties.DatabaseType.SQLITE
+          db.file = dbFile
+          db.checkLocalFilesystem = true
+        }
       val checker = ConfigurationChecker(props)
       assertThatCode { checker.checkDatabasesPath() }.doesNotThrowAnyException()
     }
 
     @Test
     fun `given sqlite with check disabled then no exception thrown`() {
-      val props = buildProperties { db ->
-        db.type = KomgaProperties.DatabaseType.SQLITE
-        db.file = "/some/path/database.sqlite"
-        db.checkLocalFilesystem = false
-      }
+      val props =
+        buildProperties { db ->
+          db.type = KomgaProperties.DatabaseType.SQLITE
+          db.file = "/some/path/database.sqlite"
+          db.checkLocalFilesystem = false
+        }
       val checker = ConfigurationChecker(props)
       assertThatCode { checker.checkDatabasesPath() }.doesNotThrowAnyException()
     }
 
     @Test
     fun `given sqlite with in-memory path then check returns gracefully`() {
-      val props = buildProperties { db ->
-        db.type = KomgaProperties.DatabaseType.SQLITE
-        db.file = "file:database?mode=memory"
-        db.checkLocalFilesystem = true
-      }
+      val props =
+        buildProperties { db ->
+          db.type = KomgaProperties.DatabaseType.SQLITE
+          db.file = "file:database?mode=memory"
+          db.checkLocalFilesystem = true
+        }
       val checker = ConfigurationChecker(props)
       assertThatCode { checker.checkDatabasesPath() }.doesNotThrowAnyException()
     }
