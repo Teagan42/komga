@@ -19,10 +19,17 @@ import kotlin.io.path.createDirectories
 class KomgaProperties {
   @PostConstruct
   private fun makeDirs() {
-    try {
-      Path(database.file).parent.createDirectories()
-      Path(tasksDb.file).parent.createDirectories()
-    } catch (_: Exception) {
+    if (!database.isPostgresql()) {
+      try {
+        Path(database.file).parent.createDirectories()
+      } catch (_: Exception) {
+      }
+    }
+    if (!tasksDb.isPostgresql()) {
+      try {
+        Path(tasksDb.file).parent.createDirectories()
+      } catch (_: Exception) {
+      }
     }
   }
 
@@ -55,8 +62,15 @@ class KomgaProperties {
   }
 
   class Database {
-    @get:NotBlank
+    var type: DatabaseType = DatabaseType.SQLITE
+
     var file: String = ""
+
+    var url: String? = null
+
+    var username: String? = null
+
+    var password: String? = null
 
     @get:Positive
     var batchChunkSize: Int = 1000
@@ -75,7 +89,11 @@ class KomgaProperties {
     var pragmas: Map<String, String> = emptyMap()
 
     var checkLocalFilesystem: Boolean = true
+
+    fun isPostgresql() = type == DatabaseType.POSTGRESQL
   }
+
+  enum class DatabaseType { SQLITE, POSTGRESQL }
 
   class Fonts {
     @get:NotBlank

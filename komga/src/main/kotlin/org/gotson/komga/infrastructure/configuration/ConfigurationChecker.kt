@@ -27,6 +27,7 @@ class ConfigurationChecker(
     database: KomgaProperties.Database,
     ignoreProp: String,
   ) {
+    if (database.isPostgresql()) return
     if (database.checkLocalFilesystem) {
       val path =
         try {
